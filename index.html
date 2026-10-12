@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tu sistema de contenido con Claude: de una idea a tres formatos | Jonatan Correa</title>
+<meta name="description" content="Aprende a convertir una idea en un documento, una presentación y un carrusel, y luego guarda ese proceso como tu propia skill. Todo con la cuenta gratis de Claude.">
+<meta name="author" content="Jonatan Correa">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --indigo:#3d34b8; --indigo-deep:#1e1b4b;
+  --text-primary:#191730; --text-secondary:#57536e; --text-muted:#8b87a0;
+  --page-bg:#f4f2fb;
+  --glass-bg:rgba(255,255,255,0.52);
+  --glass-bg-soft:rgba(255,255,255,0.38);
+  --glass-border:rgba(255,255,255,0.65);
+  --maxw:1080px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--page-bg);color:var(--text-primary);
+  font-family:'Manrope',system-ui,-apple-system,sans-serif;
+  font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+.bg-mesh{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px)}
+.b1{width:520px;height:520px;background:#8f86f0;opacity:.42;top:-140px;left:-120px}
+.b2{width:440px;height:440px;background:#f5b877;opacity:.34;top:34%;right:-160px}
+.b3{width:400px;height:400px;background:#8fd9b6;opacity:.3;bottom:6%;left:-120px}
+.b4{width:360px;height:360px;background:#c9a8f2;opacity:.34;bottom:-100px;right:8%}
+.wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+.glass{
+  background:var(--glass-bg);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--glass-border);
+  box-shadow:0 8px 40px rgba(61,52,184,0.10), inset 0 1px 0 rgba(255,255,255,0.5);
+  border-radius:26px;
+}
+.eyebrow{
+  display:inline-block;font-size:12.5px;font-weight:700;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--indigo);
+  background:rgba(255,255,255,0.55);border:1px solid var(--glass-border);
+  padding:7px 16px;border-radius:999px;margin-bottom:26px;
+}
+h1{font-size:clamp(38px,6.4vw,68px);line-height:1.04;font-weight:800;letter-spacing:-.03em;margin:0 0 22px}
+h2{font-size:clamp(27px,3.8vw,40px);line-height:1.12;font-weight:800;letter-spacing:-.02em;margin:0 0 14px}
+h3{font-size:21px;font-weight:800;letter-spacing:-.01em;margin:0 0 8px}
+.serif{font-family:'Fraunces',Georgia,serif;font-style:italic;font-weight:600;color:var(--indigo)}
+p{margin:0 0 16px;color:var(--text-secondary)}
+.lead{font-size:clamp(18px,2.2vw,21px);color:var(--text-secondary);max-width:660px}
+section{padding:44px 0}
+header.hero{padding:72px 0 40px}
+.section-head{max-width:680px;margin-bottom:26px}
+.section-head p{margin-bottom:0}
+
+/* prompts */
+.case{padding:30px 28px;margin-bottom:18px}
+.case > :last-child{margin-bottom:0}
+.prompt{margin:18px 0;background:rgba(30,27,75,.055);border:1px solid rgba(61,52,184,.13);border-radius:18px;padding:18px 20px;position:relative}
+.prompt .plabel{font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:9px;display:block}
+.prompt code{font-family:'Manrope',sans-serif;font-size:14.5px;line-height:1.6;color:var(--text-primary);display:block;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+.copy{margin-top:14px;border:0;cursor:pointer;font-family:inherit;font-size:13.5px;font-weight:700;color:#fff;padding:9px 20px;border-radius:999px;background:linear-gradient(150deg,#3d34b8,var(--indigo-deep));box-shadow:0 4px 16px rgba(61,52,184,.28),inset 0 1px 0 rgba(255,255,255,.25);transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.copy:active{transform:scale(.97)}
+.copy.done{background:linear-gradient(150deg,#2f7d5c,#1e5c42)}
+
+/* espacios para llenar: [tu tema] */
+.hueco{color:var(--indigo);font-weight:700;background:rgba(61,52,184,.10);border-radius:6px;padding:1px 4px;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+
+/* listas y notas */
+.lista{margin:0 0 16px;padding-left:22px;color:var(--text-secondary)}
+.lista li{margin-bottom:8px}
+.lista li::marker{color:var(--indigo);font-weight:800}
+.nota strong{color:var(--text-primary)}
+
+/* cta */
+.cta{background:linear-gradient(150deg,#2b2470,var(--indigo-deep));border-radius:30px;padding:56px 44px;text-align:center;color:#fff;box-shadow:0 20px 60px rgba(30,27,75,.3)}
+.cta h2{color:#fff;margin-bottom:14px}
+.cta p{color:rgba(255,255,255,.78);max-width:520px;margin:0 auto}
+.cta a{color:#fff;font-weight:700;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.45)}
+footer{padding:30px 0 48px;text-align:center;font-size:14px;color:var(--text-muted)}
+footer a{color:var(--indigo);text-decoration:none;font-weight:700}
+
+@media (prefers-reduced-motion: no-preference){
+  .rise{opacity:0;transform:translateY(10px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+}
+@media (max-width:700px){
+  .wrap{padding:0 18px}
+  section{padding:34px 0}
+  header.hero{padding:48px 0 28px}
+  .cta{padding:40px 24px}
+  .case{padding:24px 20px}
+}
+@media (max-width:420px){
+  .prompt{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="blob b3"></div><div class="blob b4"></div>
+</div>
+
+<header class="hero">
+  <div class="wrap rise">
+    <span class="eyebrow">Guía · Nivel principiante</span>
+    <h1>Tu sistema de contenido con Claude: <span class="serif">de una idea a tres formatos</span></h1>
+    <p class="lead">Escribes una idea una sola vez y Claude la convierte en tres piezas: un documento, una presentación y un carrusel para Instagram. Después guardas ese proceso como tu propia skill para repetirlo con cualquier tema, cuando quieras.</p>
+    <p class="lead">Desde el 8 de octubre de 2026, los documentos, presentaciones y diseños de Claude están disponibles en todos los planes, incluido el gratis. Todo lo de esta guía funciona con una cuenta gratuita.</p>
+  </div>
+</header>
+
+<section id="lograr">
+  <div class="wrap">
+    <article class="glass case">
+      <h2>¿Qué vas a lograr?</h2>
+      <ul class="lista">
+        <li>Un documento de una página que sirve como base de todo tu contenido.</li>
+        <li>Una presentación de 5 láminas a partir de ese documento.</li>
+        <li>Un carrusel de 5 slides para Instagram a partir del mismo documento.</li>
+        <li>Tu propia skill, para repetir todo el sistema con solo escribir una idea.</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section id="antes">
+  <div class="wrap">
+    <article class="glass case">
+      <h2>Antes de empezar</h2>
+      <ol class="lista">
+        <li>Ten a mano el tema sobre el que quieres crear contenido: tu servicio, tu producto, un consejo o algo que enseñas.</li>
+        <li>Define tu identidad visual en tres datos: tus colores (con su código si lo tienes, por ejemplo #1C2A6B), tu tipografía y el estilo que buscas (por ejemplo: sobrio, colorido, minimalista).</li>
+        <li>Un consejo para la cuenta gratis: el plan gratuito tiene un límite de uso, y los diseños consumen bastante. Haz la Parte 1 en un momento y la Parte 2 en otro. Si se agota el límite, espera a que se renueve y continúa en el mismo chat.</li>
+      </ol>
+    </article>
+  </div>
+</section>
+
+<section id="parte-1">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Parte 1: el workflow</h2>
+      <p>Haz los tres pasos en el mismo chat y en este orden. Así Claude recuerda tu documento y tu identidad visual en cada paso.</p>
+    </div>
+
+    <article class="glass case">
+      <h3>Paso 1: crea tu documento base</h3>
+      <p>Este documento es la fuente de todo lo demás. Mientras más claro quede, mejores salen la presentación y el carrusel.</p>
+      <p>Copia este prompt en un chat nuevo de Claude y llena los espacios entre corchetes:</p>
+      <div class="prompt">
+        <span class="plabel">Prompt listo para copiar</span>
+        <code>Crea un documento de una página sobre <span class="hueco">[tu tema, servicio o producto]</span>.
+
+Está dirigido a <span class="hueco">[para quién es: por ejemplo, dueños de negocio, creadores, emprendedores]</span>.
+
+Estructura:
+- ¿Qué es?
+- ¿Para quién es?
+- <span class="hueco">[3 o 4 puntos clave que quieres comunicar]</span>
+- ¿Cómo empezar?: <span class="hueco">[tu llamado a la acción, por ejemplo escribirme por WhatsApp o seguirme en Instagram]</span>
+
+Identidad visual:
+- Colores: <span class="hueco">[tus colores, con su código si lo tienes]</span>
+- Tipografía: <span class="hueco">[tu tipografía]</span>
+- Estilo: <span class="hueco">[por ejemplo: sobrio y profesional, colorido y juvenil, minimalista]</span>
+
+Tono <span class="hueco">[cercano, profesional, divertido]</span>, frases cortas y sin tecnicismos.</code>
+        <button class="copy" type="button">Copiar prompt</button>
+      </div>
+      <p class="nota"><strong>Qué esperar:</strong> Claude crea el documento y lo muestra al lado del chat.</p>
+      <p class="nota"><strong>Si algo no te gusta:</strong> pídelo en el mismo chat, de forma concreta. Por ejemplo: "Haz el título más corto", "Cambia el color de fondo a blanco", "Quita la tercera sección".</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 2: conviértelo en presentación</h3>
+      <p>Cuando el documento esté como lo quieres, envía este prompt en el mismo chat:</p>
+      <div class="prompt">
+        <span class="plabel">Prompt listo para copiar</span>
+        <code>Convierte este documento en una presentación de 5 láminas. Muy visual, con poco texto por lámina. Mantén exactamente la misma identidad visual del documento: colores, tipografía y estilo.</code>
+        <button class="copy" type="button">Copiar prompt</button>
+      </div>
+      <p class="nota"><strong>Qué esperar:</strong> una presentación de 5 láminas basada en tu documento.</p>
+      <p class="nota"><strong>Si algo no te gusta:</strong> indica la lámina y el cambio. Por ejemplo: "En la lámina 3 usa una sola frase grande en vez de una lista".</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 3: conviértelo en carrusel para Instagram</h3>
+      <p>En el mismo chat, envía este prompt:</p>
+      <div class="prompt">
+        <span class="plabel">Prompt listo para copiar</span>
+        <code>Ahora convierte el mismo documento en un carrusel de Instagram de 5 slides, en formato vertical de 1080 × 1350 px. Mantén la misma identidad visual.
+- Slide 1: portada con un gancho fuerte que invite a deslizar.
+- Slides 2 a 4: una idea por slide, con poco texto.
+- Slide 5: cierre con mi llamado a la acción: <span class="hueco">[tu llamado a la acción]</span>.
+Los titulares sin punto final y de máximo 12 palabras.</code>
+        <button class="copy" type="button">Copiar prompt</button>
+      </div>
+      <p class="nota"><strong>Qué esperar:</strong> 5 slides verticales listos para descargar y publicar.</p>
+      <p class="nota"><strong>Si algo no te gusta:</strong> igual que antes, indica el slide y el cambio. Si sale en formato cuadrado, pídele: "Hazlo en formato vertical de 1080 × 1350 px".</p>
+    </article>
+  </div>
+</section>
+
+<section id="parte-2">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Parte 2: convierte tu workflow en una skill</h2>
+    </div>
+
+    <article class="glass case">
+      <h3>¿Qué es una skill?</h3>
+      <p>Una skill es un conjunto de instrucciones que Claude guarda en tu cuenta y usa cada vez que se lo pides. En vez de repetir los tres prompts y tu identidad visual cada vez, le escribes tu idea y Claude ya sabe qué hacer, con qué formato y con qué estilo.</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 1: activa la opción necesaria</h3>
+      <p>Las skills necesitan una opción activada en tu cuenta. Hazlo una sola vez:</p>
+      <ol class="lista">
+        <li>En Claude, entra a Configuración.</li>
+        <li>Abre la sección Capacidades.</li>
+        <li>Activa la opción "Ejecución de código y creación de archivos" (en inglés aparece como "Code execution and file creation").</li>
+      </ol>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 2: pídele a Claude que cree tu skill</h3>
+      <p>Abre el chat donde hiciste la Parte 1 (o uno nuevo) y envía este prompt, llenando los espacios:</p>
+      <div class="prompt">
+        <span class="plabel">Prompt listo para copiar</span>
+        <code>Quiero crear una skill que repita este sistema de contenido cada vez que le dé una idea.
+
+El sistema funciona así:
+1. Crea un documento de una página sobre la idea, con esta estructura: ¿Qué es?, ¿Para quién es?, 3 o 4 puntos clave y ¿Cómo empezar?
+2. Convierte ese documento en una presentación de 5 láminas, muy visual y con poco texto.
+3. Convierte el mismo documento en un carrusel de Instagram de 5 slides verticales de 1080 × 1350 px: portada con gancho, una idea por slide y cierre con llamado a la acción. Titulares sin punto final.
+
+Mi identidad visual, que debe usar siempre:
+- Colores: <span class="hueco">[tus colores]</span>
+- Tipografía: <span class="hueco">[tu tipografía]</span>
+- Estilo: <span class="hueco">[tu estilo]</span>
+
+Mi tono: <span class="hueco">[tu tono]</span>. Mi llamado a la acción habitual: <span class="hueco">[tu llamado a la acción]</span>.
+
+Antes de crear las piezas, la skill debe mostrarme el documento y esperar mi aprobación.
+
+Hazme las preguntas que necesites y luego crea la skill.</code>
+        <button class="copy" type="button">Copiar prompt</button>
+      </div>
+      <p class="nota"><strong>Qué esperar:</strong> Claude te hará algunas preguntas sobre cómo quieres que funcione. Respóndelas con detalle: mientras más claro seas, mejor queda la skill. Al final, Claude te entrega la skill lista.</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 3: revísala y ajústala</h3>
+      <p>Lee lo que Claude escribió en la skill y revisa que incluya:</p>
+      <ul class="lista">
+        <li>Los tres pasos, en orden.</li>
+        <li>Tu identidad visual completa.</li>
+        <li>Tu tono y tu llamado a la acción.</li>
+      </ul>
+      <p>Si falta algo o quieres cambiarlo, pídelo en el mismo chat. Por ejemplo: "Agrega que el carrusel siempre termine con mi usuario de Instagram".</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 4: guarda tu skill</h3>
+      <ol class="lista">
+        <li>Guarda la skill con la opción que Claude te muestra junto al archivo.</li>
+        <li>Entra a Personalizar y abre la sección Skills. Ahí debe aparecer tu skill. Verifica que esté activada.</li>
+      </ol>
+      <p class="nota"><strong>Si no aparece:</strong> descarga el archivo que te entregó Claude. Luego, en Personalizar &gt; Skills, toca el botón "+", elige "Crear skill" y después "Subir una skill", y selecciona ese archivo.</p>
+    </article>
+
+    <article class="glass case">
+      <h3>Paso 5: úsala</h3>
+      <p>Abre un chat nuevo y escribe algo como:</p>
+      <div class="prompt">
+        <span class="plabel">Prompt listo para copiar</span>
+        <code>Usa mi skill de sistema de contenido con esta idea: <span class="hueco">[tu nueva idea]</span></code>
+        <button class="copy" type="button">Copiar prompt</button>
+      </div>
+      <p>Claude reconoce tu skill y repite todo el sistema: primero el documento, y después de tu aprobación, la presentación y el carrusel.</p>
+      <p class="nota"><strong>Si Claude no usa tu skill:</strong> menciónala por su nombre en el mensaje. Si sigue sin funcionar, vuelve al chat donde la creaste y pídele que la mejore.</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="cta">
+      <h2>Ahora te toca 🛸</h2>
+      <p>Crea tu primera pieza con tu skill y compártela en <a href="https://club.jonatancorrea.com/espacios" target="_blank" rel="noopener">los espacios de El Club</a>. Cuéntanos qué tema elegiste y cómo te quedó tu sistema.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    Guía preparada por <a href="https://jonatancorrea.com" target="_blank" rel="noopener">Jonatan Correa</a> · Comunidad MODO FUTURO · Publicada el 12 de octubre de 2026
+  </div>
+</footer>
+
+<script>
+function copiarTexto(texto){
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(texto);
+  return new Promise(function(ok, falla){
+    var ta = document.createElement('textarea');
+    ta.value = texto; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.top = '0'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, texto.length);
+    try { document.execCommand('copy') ? ok() : falla(); } catch (e) { falla(e); }
+    document.body.removeChild(ta);
+  });
+}
+document.querySelectorAll('.copy').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    var code = btn.parentElement.querySelector('code').innerText;
+    copiarTexto(code).then(function(){
+      var original = btn.textContent;
+      btn.textContent = '¡Copiado!';
+      btn.classList.add('done');
+      setTimeout(function(){ btn.textContent = original; btn.classList.remove('done'); }, 1800);
+    });
+  });
+});
+</script>
+</body>
+</html>
